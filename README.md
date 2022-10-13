@@ -1,6 +1,6 @@
-#Github Actions
+# Github Actions
 
-##A collection of re-usable github actions
+## A collection of re-usable github actions
 
 * [repo-sync](./.github/workflows/repo-sync-workflow.yml)
 
