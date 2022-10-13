@@ -1,0 +1,13 @@
+name: Push to codecommit
+run-name: ${{ github.actor }} has pushed to ${{ github.ref }}
+on: [push]
+jobs:
+  synch-to-codecommit:
+    permissions:
+      contents: read
+    uses: NHSDigital/github-actions/.github/workflows/repo-synch-workflow.yml
+    with:
+      repo_name: my-codecommit-repo
+    secrets:
+      SSH_KEY: ${{ secrets.MY_CODECOMMIT_SSH_KEY }}
+      SSH_USER_ID: ${{ secrets.MY_CODECOMMIT_SSH_USER }}

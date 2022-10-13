@@ -1,0 +1,52 @@
+name: Repos
+on: 
+  workflow_call:
+    inputs:
+      repo_host:
+        required: false
+        type: string
+        default: git-codecommit.eu-west-2.amazonaws.com
+        description: repo url will be ssh://${repo_host}${repo_path}/${repo_name}
+      repo_path:
+        required: false
+        type: string
+        default: /v1/repos
+        description: repo url will be ssh://${repo_host}${repo_path}/${repo_name}
+      repo_name:
+        required: true
+        type: string
+        description: repo url will be ssh://${repo_host}${repo_path}/${repo_name}
+    secrets:
+      SSH_KEY:
+        required: true
+        description: SSH Key to use for repository connection
+      SSH_USER_ID:
+        required: true
+        description: SSH user to use for repository connection
+
+jobs:
+  synch-to-codecommit:
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Job is running"
+    - name: checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: ssh configuration
+      env:
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+        SSH_USER_ID: ${{ secrets.SSH_USER_ID }}
+      run: |
+        mkdir ~/.ssh
+        echo -e "Host ${{ inputs.repo_host }}\n\tUser ${SSH_USER_ID}\n\tIdentityFile ~/.ssh/_repokey_\n\tStrictHostKeyChecking no" > ~/.ssh/config
+        echo "${SSH_KEY}" > ~/.ssh/_repokey_
+        chmod 400 ~/.ssh/_repokey_
+        ls -l ~/.ssh
+    - name: add remote and push
+      run: |
+        cd ${{ github.workspace }}
+        REPO_URL="ssh://${{ inputs.repo_host }}${{ inputs.repo_path }}/${{ inputs.repo_name }}"
+        echo REPO_URL=${REPO_URL}
+        /usr/bin/git remote add DEST_REPO ${REPO_URL}
+        /usr/bin/git push -f DEST_REPO ${{ github.ref }}
