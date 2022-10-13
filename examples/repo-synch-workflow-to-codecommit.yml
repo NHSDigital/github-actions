@@ -5,7 +5,7 @@ jobs:
   synch-to-codecommit:
     permissions:
       contents: read
-    uses: NHSDigital/github-actions/.github/workflows/repo-synch-workflow.yml
+    uses: NHSDigital/github-actions/.github/workflows/repo-sync-workflow.yml@v1
     with:
       repo_name: my-codecommit-repo
     secrets:
